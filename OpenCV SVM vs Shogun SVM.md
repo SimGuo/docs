@@ -1,4 +1,4 @@
-###we will try to do a one to one comparison between the Shogun's implementaton of LibSVM to that of OpenCV's LibSVM on a standard multi-class data-set available here.
+###we will try to do a one to one comparison between the Shogun's implementaton of LibSVM to that of OpenCV's LibSVM on a standard multi-class data-set available here.(http://archive.ics.uci.edu/ml/machine-learning-databases/car/car.data)
 ---
 our dataset consists of 1728 examples in which we will use the first half (864) as the training data and the rest as the testing data.
 ___

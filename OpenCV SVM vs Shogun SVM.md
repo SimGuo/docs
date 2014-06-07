@@ -49,7 +49,7 @@ ___
 we will be using the CvMLData class of OpenCV.
 ```CPP
     CvMLData mlData;
-    mlData.read_csv("iris.data");
+    mlData.read_csv("car.data");
 
 ```
 

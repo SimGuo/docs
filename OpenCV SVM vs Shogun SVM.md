@@ -191,7 +191,7 @@ We here start preparing for the SVM implementation in shogun. Things that we wil
 we start with creating the training data as the ```DenseFeatures```.
 
 ```CPP
-    SGMatrix<float64_t> shogun_traindata = CV2SGMatrixFactory::getMatrix<float64_t>(traindata, CV2SG_MANUAL);
+    SGMatrix<float64_t> shogun_traindata = CV2SGMatrixFactory::getSGMatrix<float64_t>(traindata, CV2SG_MANUAL);
     SGMatrix<float64_t>::transpose_matrix(shogun_traindata.matrix, shogun_traindata.num_rows, shogun_traindata.num_cols);
     CDenseFeatures<float64_t>* shogun_trainfeatures = new CDenseFeatures<float64_t>(shogun_traindata);
 ```
@@ -220,7 +220,7 @@ Now we are ready to initialize the SVM for Shogun. We train it here!
 ___
 Prepare the testing data.
 ```CPP
-    SGMatrix<float64_t> shogun_testdata = CV2SGMatrixFactory::getMatrix<float64_t>(testdata, CV2SG_MANUAL);
+    SGMatrix<float64_t> shogun_testdata = CV2SGMatrixFactory::getSGMatrix<float64_t>(testdata, CV2SG_MANUAL);
     SGMatrix<float64_t>::transpose_matrix(shogun_testdata.matrix, shogun_testdata.num_rows, shogun_testdata.num_cols);
     CDenseFeatures<float64_t>* testfeatures = new CDenseFeatures<float64_t>(shogun_testdata);
 ```
@@ -241,6 +241,21 @@ Testing Procedure.
     return 0;
 }
 ```
+___
+Output!
+```CPP
+	150.366
+	accuracy by the opencv svm is ...77.0833
+	[WARN] In file /home/kislay/gsoc/most_latest_shogun/shogun/src/shogun/multiclass/MulticlassOneVsOneStrategy.cpp line 33: MulticlassOneVsOneStrategy::CMulticlassOneVsOneStrategy(): register parameters!
+	0.215284
+	accuracy by the shogun svm is77.1991
+	
+```
+___
+
+We infer from the output that:
+* the accuracy of OpenCV's LibSVM is 77.0833% with the time taken = 150.366 secs.
+* the accuracy of Shogun's LibSVM is 77.1991% with the time taken = 0.215 secs.
 
 
 

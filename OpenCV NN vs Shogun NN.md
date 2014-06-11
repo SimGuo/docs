@@ -20,6 +20,13 @@ Shogun NeuralNetworks vs OpenCV Neural Network.
 #include<opencv2/core/core.hpp>
 #include<opencv2/highgui/highgui.hpp>
 
+// for measuring time
+#include <omp.h>
+// The variable start will be later used in the time measurement calculations.
+double start;
+#define ntime start=omp_get_wtime()
+#define ftime cout<<omp_get_wtime()-start<<endl
+
 using namespace shogun;
 using namespace std;
 using namespace cv;
@@ -31,46 +38,78 @@ using namespace cv;
 int main()
 {
     init_shogun_with_defaults();
+    
     CvMLData mlData;
     mlData.read_csv("car.data");
+    
     const CvMat* temp = mlData.get_values();
     int numfeatures = temp->cols-1;
     mlData.set_response_idx(numfeatures);
+    
     CvTrainTestSplit spl((float)0.5);
     mlData.set_train_test_split(&spl);  
+    
     const CvMat* traindata_idx = mlData.get_train_sample_idx();
     const CvMat* testdata_idx = mlData.get_test_sample_idx();
+
 ```
 ```CPP
-    
+
     Mat mytraindataidx(traindata_idx);
     Mat mytestdataidx(testdata_idx);
     Mat all_Data(temp);
     Mat all_responses = mlData.get_responses();
     Mat traindata(mytraindataidx.cols,numfeatures,CV_32F);
-    Mat trainresponse(mytraindataidx.cols,1,CV_32S);
+    Mat shogun_trainresponse(mytraindataidx.cols,1,CV_32S);
+    Mat opencv_trainresponse(mytraindataidx.cols,4,CV_32F);
     Mat testdata(mytestdataidx.cols,numfeatures,CV_32F);
-    Mat testresponse(mytestdataidx.cols,1,CV_32S);
+    Mat shogun_testresponse(mytestdataidx.cols,1,CV_32S);
+    Mat opencv_testresponse(mytestdataidx.cols,4,CV_32F);
+
+```
+```CPP
+    Mat NNall_response = Mat::ones(all_responses.rows, 4, CV_32F);
+    float data1[]={1,0,0,0};
+    float data2[]={0,1,0,0};
+    float data3[]={0,0,1,0};
+    float data4[]={0,0,0,1};
+
+    Mat data1Mat(1,4,CV_32F,data1);
+    Mat data2Mat(1,4,CV_32F,data2);
+    Mat data3Mat(1,4,CV_32F,data3);
+    Mat data4Mat(1,4,CV_32F,data4);
 ```
 ```CPP
     for (int h=0; h<all_responses.rows; h++)
     {
         if (all_responses.at<float>(h) == 4 )
+        {
+            data1Mat.copyTo(NNall_response.row(h));
             all_responses.at<float>(h)=0;
-
+        }
         else if (all_responses.at<float>(h) == 10)
+        {
+            data2Mat.copyTo(NNall_response.row(h));
             all_responses.at<float>(h)=1;
-
+        }
         else if (all_responses.at<float>(h) == 11)
+        {
+            data3Mat.copyTo(NNall_response.row(h));
             all_responses.at<float>(h)=2;
-
-        else all_responses.at<float>(h)=3;
+        }
+        else 
+        {
+            data4Mat.copyTo(NNall_response.row(h));
+            all_responses.at<float>(h)=3;
+        }
     }
 ```
 ```CPP
-    for(int i=0; i<mytraindataidx.cols; i++)
+
+   for(int i=0; i<mytraindataidx.cols; i++)
     {
-        trainresponse.at<int>(i)=all_responses.at<float>(mytraindataidx.at<int>(i));    
+        NNall_response.row(mytraindataidx.at<int>(i)).copyTo(opencv_trainresponse.row(i));
+        shogun_trainresponse.at<int>(i)=all_responses.at<float>(mytraindataidx.at<int>(i));    
         for(int j=0; j<=numfeatures; j++)
         {
             traindata.at<float>(i, j)=all_Data.at<float>(mytraindataidx.at<int>(i), j);
@@ -79,15 +118,44 @@ int main()
 
     for(int i=0; i<mytestdataidx.cols; i++)
     {
-        testresponse.at<int>(i)=all_responses.at<float>(mytestdataidx.at<int>(i));
+        NNall_response.row(mytestdataidx.at<int>(i)).copyTo(opencv_testresponse.row(i));
+        shogun_testresponse.at<int>(i)=all_responses.at<float>(mytestdataidx.at<int>(i));
         for(int j=0; j<=numfeatures; j++)
         {
             testdata.at<float>(i, j)=all_Data.at<float>(mytestdataidx.at<int>(i), j);
         }   
     }
 
-```
 
+```
+```CPP
+    int layersize_array[] = {6,10,4};
+    Mat layersize_mat(1,3,CV_32S,layersize_array);
+
+    CvANN_MLP neural_network = CvANN_MLP();
+    neural_network.create(layersize_mat ,CvANN_MLP::GAUSSIAN);
+
+    ntime;
+    neural_network.train(traindata, opencv_trainresponse, Mat());
+    ftime;
+
+    Mat NN_output(opencv_testresponse.rows, opencv_testresponse.cols, CV_32F); 
+    Point p_max, test_max;
+
+    Mat opencv_testdata = testdata;
+
+    int k=0;
+    Mat ghgh(1,4, CV_32F);
+    for (int i=0; i<opencv_testdata.rows; ++i)
+    { 
+        neural_network.predict(opencv_testdata.row(i), ghgh);
+        minMaxLoc(ghgh,NULL,NULL,NULL,&p_max);
+        minMaxLoc(opencv_testresponse.row(i),NULL, NULL, NULL, &test_max);
+        if (p_max.x == test_max.x)
+        ++k;
+    }
+    cout<< "our nn of opencv eff is: "<< 100.0* k/testdata.rows<<endl;
+```
 
 ```CPP
     SGMatrix<float64_t> shogun_traindata = CV2SGMatrixFactory::getSGMatrix<float64_t>(traindata, CV2SG_MANUAL);
@@ -95,7 +163,7 @@ int main()
     CDenseFeatures<float64_t>* shogun_trainfeatures = new CDenseFeatures<float64_t>(shogun_traindata);
 ```
 ```CPP
-    CDenseFeatures<float64_t>* shogun_dense_response = CV2FeaturesFactory::getDenseFeatures<float64_t>(trainresponse, CV2SG_MANUAL);
+    CDenseFeatures<float64_t>* shogun_dense_response = CV2FeaturesFactory::getDenseFeatures<float64_t>(shogun_trainresponse, CV2SG_MANUAL);
     SGVector<float64_t> shogun_vector_response = shogun_dense_response->get_feature_vector(0);
     CMulticlassLabels* labels = new CMulticlassLabels(shogun_vector_response);
 ```
@@ -173,7 +241,7 @@ ___
     int32_t k=0;
     for (int32_t i=0; i<mytraindataidx.cols; i++ )
     {
-        if (predictions->get_label(i)==testresponse.at<int>(i))
+        if (predictions->get_label(i)==shogun_testresponse.at<int>(i))
         ++k;
     }
     cout<<100.0*k/(mytraindataidx.cols)<<endl;

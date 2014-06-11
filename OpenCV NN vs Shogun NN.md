@@ -78,12 +78,14 @@ ___
 We declare few cv::Mat objects down there which we will later use for our work.
 * ```all_Data```: for containing the whole matrix offered to us by the ```.data``` file. 
 * ```all_responses```: for containing all the responses.
+* ```opencv_all_responses```: for containing all the responses for **OpenCV**.
+* ```shogun_all_responses```: for containing all the responses for **Shogun**.
 * ```traindata```: for containing all the training data.
-* ```shogun_trainresponse```: for containing all the outputs we are provided for the training data as needed by Shogun for carrying out multiclass classification.
-* ```opencv_trainresponse```: for containing all the outputs we are provided for the training data as needed by OpenCV for carrying out multiclass classification.
+* ```shogun_trainresponse```: for containing all the outputs we are provided for the training data as needed by **Shogun** for carrying out multiclass classification.
+* ```opencv_trainresponse```: for containing all the outputs we are provided for the training data as needed by **OpenCV** for carrying out multiclass classification.
 * ```testdata```: for containing all the testing data.
-* ```shogun_testresponse```: for containing all the outputs of the test data(for Shogun). This will be used for evaluation purpose.
-* ```opencv_testresponse```: for containing all the outputs of the test data(for OpenCV). This will be used for evaluation purpose.
+* ```shogun_testresponse```: for containing all the outputs of the test data(for **Shogun**). This will be used for evaluation purpose.
+* ```opencv_testresponse```: for containing all the outputs of the test data(for **OpenCV**). This will be used for evaluation purpose.
 
  
 ```CPP
@@ -95,6 +97,8 @@ We declare few cv::Mat objects down there which we will later use for our work.
     Mat testdata(mytestdataidx.cols,numfeatures,CV_32F);
     Mat shogun_testresponse(mytestdataidx.cols,1,CV_32S);
     Mat opencv_testresponse(mytestdataidx.cols,4,CV_32F);
+    Mat opencv_all_responses = Mat::ones(all_responses.rows, 4, CV_32F);
+    Mat shogun_all_responses = Mat::ones(all_responses.rows, 1, CV_32F);
 
 ```
 ___
@@ -102,8 +106,7 @@ As for now OpenCV donot support multiclass responses. The workaround that is sug
 
 Hence here we create 4 tuples, each one for a separate class.
 ```CPP
-    Mat opencv_all_responses = Mat::ones(all_responses.rows, 4, CV_32F);
-    Mat shogun_all_responses = Mat::ones(all_responses.rows, 1, CV_32F);
+   
     float data1[]={1,0,0,0};
     float data2[]={0,1,0,0};
     float data3[]={0,0,1,0};
@@ -180,13 +183,14 @@ ___
     
     Point p_max, test_max;
 
-    Mat opencv_testdata = testdata;
+    //Mat opencv_testdata = testdata;
 
     int k=0;
     Mat ghgh(1,4, CV_32F);
     for (int i=0; i<opencv_testdata.rows; ++i)
     { 
-        neural_network.predict(opencv_testdata.row(i), ghgh);
+       // neural_network.predict(opencv_testdata.row(i), ghgh);
+        neural_network.predict(testdata.row(i), ghgh);
         minMaxLoc(ghgh,NULL,NULL,NULL,&p_max);
         minMaxLoc(opencv_testresponse.row(i),NULL, NULL, NULL, &test_max);
         if (p_max.x == test_max.x)

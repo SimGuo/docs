@@ -29,6 +29,7 @@ double start;
 #define ftime cout<<omp_get_wtime()-start<<endl
 ```
 ___
+Now the namespaces.
 ```CPP
 using namespace shogun;
 using namespace std;
@@ -36,28 +37,36 @@ using namespace cv;
 
 ```
 ___
+Here comes the actual benchmarking code!
 ```CPP
 int main()
 {
     init_shogun_with_defaults();
 ```
 ___
+we will be using the CvMLData class of OpenCV.
 ```CPP
     CvMLData mlData;
     mlData.read_csv("car.data");
 ```
 ___
+> The data that we have has the class response(outcome) written as the last index of each row.
+
+We get a pointer to ```CvMat``` class containing all the data. Total number of the features is the ```total columns -1```.
+
 ```CPP
     const CvMat* temp = mlData.get_values();
     int numfeatures = temp->cols-1;
     mlData.set_response_idx(numfeatures);
 ```
 ___
+We divide the data available to us into two equal parts. We will use the first half for the training purpose and the rest half for the testing purpose.
 ```CPP
     CvTrainTestSplit spl((float)0.5);
     mlData.set_train_test_split(&spl);  
 ```
 ___
+We get the respective indices of the training and testing data and store it in the cv::Mat format.
 ```CPP
 
     const CvMat* traindata_idx = mlData.get_train_sample_idx();
@@ -66,8 +75,18 @@ ___
     Mat mytestdataidx(testdata_idx);
 ```
 ___
-```CPP
+We declare few cv::Mat objects down there which we will later use for our work.
+* ```all_Data```: for containing the whole matrix offered to us by the ```.data``` file. 
+* ```all_responses```: for containing all the responses.
+* ```traindata```: for containing all the training data.
+* ```shogun_trainresponse```: for containing all the outputs we are provided for the training data as needed by Shogun for carrying out multiclass classification.
+* ```opencv_trainresponse```: for containing all the outputs we are provided for the training data as needed by OpenCV for carrying out multiclass classification.
+* ```testdata```: for containing all the testing data.
+* ```shogun_testresponse```: for containing all the outputs of the test data(for Shogun). This will be used for evaluation purpose.
+* ```opencv_testresponse```: for containing all the outputs of the test data(for OpenCV). This will be used for evaluation purpose.
 
+ 
+```CPP
     Mat all_Data(temp);
     Mat all_responses = mlData.get_responses();
     Mat traindata(mytraindataidx.cols,numfeatures,CV_32F);
@@ -79,6 +98,7 @@ ___
 
 ```
 ___
+As for now OpenCV donot support multiclass 
 ```CPP
     Mat NNall_response = Mat::ones(all_responses.rows, 4, CV_32F);
     float data1[]={1,0,0,0};
@@ -90,6 +110,7 @@ ___
     Mat data2Mat(1,4,CV_32F,data2);
     Mat data3Mat(1,4,CV_32F,data3);
     Mat data4Mat(1,4,CV_32F,data4);
+
 ```
 ___
 ```CPP

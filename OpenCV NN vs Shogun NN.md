@@ -1,6 +1,6 @@
 Shogun NeuralNetworks vs OpenCV Neural Network.
-
 ```CPP
+// shogun includes.
 #include <shogun/base/init.h>
 #include <shogun/lib/SGVector.h>
 #include <shogun/lib/SGMatrix.h>
@@ -13,6 +13,7 @@ Shogun NeuralNetworks vs OpenCV Neural Network.
 #include <shogun/lib/OpenCV/CV2FeaturesFactory.h>
 #include <shogun/lib/OpenCV/CV2SGMatrixFactory.h>
 
+// standard library.
 #include <iostream>
 
 // opencv includes.
@@ -20,43 +21,53 @@ Shogun NeuralNetworks vs OpenCV Neural Network.
 #include<opencv2/core/core.hpp>
 #include<opencv2/highgui/highgui.hpp>
 
-// for measuring time
+// for measuring time.
 #include <omp.h>
 // The variable start will be later used in the time measurement calculations.
 double start;
 #define ntime start=omp_get_wtime()
 #define ftime cout<<omp_get_wtime()-start<<endl
-
+```
+___
+```CPP
 using namespace shogun;
 using namespace std;
 using namespace cv;
 
 ```
-
+___
 ```CPP
-
 int main()
 {
     init_shogun_with_defaults();
-    
+```
+___
+```CPP
     CvMLData mlData;
     mlData.read_csv("car.data");
-    
+```
+___
+```CPP
     const CvMat* temp = mlData.get_values();
     int numfeatures = temp->cols-1;
     mlData.set_response_idx(numfeatures);
-    
+```
+___
+```CPP
     CvTrainTestSplit spl((float)0.5);
     mlData.set_train_test_split(&spl);  
-    
-    const CvMat* traindata_idx = mlData.get_train_sample_idx();
-    const CvMat* testdata_idx = mlData.get_test_sample_idx();
-
 ```
+___
 ```CPP
 
+    const CvMat* traindata_idx = mlData.get_train_sample_idx();
+    const CvMat* testdata_idx = mlData.get_test_sample_idx();
     Mat mytraindataidx(traindata_idx);
     Mat mytestdataidx(testdata_idx);
+```
+___
+```CPP
+
     Mat all_Data(temp);
     Mat all_responses = mlData.get_responses();
     Mat traindata(mytraindataidx.cols,numfeatures,CV_32F);
@@ -67,6 +78,7 @@ int main()
     Mat opencv_testresponse(mytestdataidx.cols,4,CV_32F);
 
 ```
+___
 ```CPP
     Mat NNall_response = Mat::ones(all_responses.rows, 4, CV_32F);
     float data1[]={1,0,0,0};
@@ -79,6 +91,7 @@ int main()
     Mat data3Mat(1,4,CV_32F,data3);
     Mat data4Mat(1,4,CV_32F,data4);
 ```
+___
 ```CPP
     for (int h=0; h<all_responses.rows; h++)
     {
@@ -104,6 +117,7 @@ int main()
         }
     }
 ```
+___
 ```CPP
 
    for(int i=0; i<mytraindataidx.cols; i++)
@@ -126,8 +140,8 @@ int main()
         }   
     }
 
-
 ```
+___
 ```CPP
     int layersize_array[] = {6,10,4};
     Mat layersize_mat(1,3,CV_32S,layersize_array);
@@ -156,18 +170,19 @@ int main()
     }
     cout<< "our nn of opencv eff is: "<< 100.0* k/testdata.rows<<endl;
 ```
-
+___
 ```CPP
     SGMatrix<float64_t> shogun_traindata = CV2SGMatrixFactory::getSGMatrix<float64_t>(traindata, CV2SG_MANUAL);
     SGMatrix<float64_t>::transpose_matrix(shogun_traindata.matrix, shogun_traindata.num_rows, shogun_traindata.num_cols);
     CDenseFeatures<float64_t>* shogun_trainfeatures = new CDenseFeatures<float64_t>(shogun_traindata);
 ```
+___
 ```CPP
     CDenseFeatures<float64_t>* shogun_dense_response = CV2FeaturesFactory::getDenseFeatures<float64_t>(shogun_trainresponse, CV2SG_MANUAL);
     SGVector<float64_t> shogun_vector_response = shogun_dense_response->get_feature_vector(0);
     CMulticlassLabels* labels = new CMulticlassLabels(shogun_vector_response);
 ```
-
+___
 ```CPP
     SGMatrix<float64_t> shogun_testdata = CV2SGMatrixFactory::getSGMatrix<float64_t>(testdata, CV2SG_MANUAL);
     SGMatrix<float64_t>::transpose_matrix(shogun_testdata.matrix, shogun_testdata.num_rows, shogun_testdata.num_cols);

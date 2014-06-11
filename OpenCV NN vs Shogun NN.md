@@ -102,9 +102,9 @@ We declare few cv::Mat objects down there which we will later use for our work.
 
 ```
 ___
-As for now OpenCV donot support multiclass responses. The workaround that is suggested is to create a binary Tuple of M elements.(Here M is number of classes whose value is greater than 2 ).
+As for now **OpenCV** donot support multiclass responses. The workaround that is suggested is to create a binary tuple of ```M``` elements.( Here ```M``` is number of classes whose value is greater than ```2``` ).
 
-Hence here we create 4 tuples, each one for a separate class.
+Hence here we create ```4``` tuples, each one for a separate class.
 ```CPP
    
     float data1[]={1,0,0,0};
@@ -119,6 +119,7 @@ Hence here we create 4 tuples, each one for a separate class.
 
 ```
 ___
+We fill in the responses from ```all_responses``` to the two respective response Mat objects of **OpenCV** and **Shogun** namely ```opencv_all_responses``` and ```shogun_all_responses```.
 
 ```CPP
     for (int h=0; h<all_responses.rows; h++)
@@ -146,6 +147,8 @@ ___
     }
 ```
 ___
+we fill in the ```traindata ```,  ```testdata```, ```opencv_train_response```, ```shogun_train_response```, ```opencv_test_response```, ```shogun_test_response``` Mats which were defined above.
+
 ```CPP
 
    for(int i=0; i<mytraindataidx.cols; i++)
@@ -170,28 +173,34 @@ ___
 
 ```
 ___
+Here I have created a 3 layered network. The input layer consists of 6 neurons which is equal to number of features. The hidden layer has 10 neurons and similarly the output layer has 4 neurons which is equal to the number of classes.
+
 ```CPP
     int layersize_array[] = {6,10,4};
     Mat layersize_mat(1,3,CV_32S,layersize_array);
 
     CvANN_MLP neural_network = CvANN_MLP();
     neural_network.create(layersize_mat ,CvANN_MLP::GAUSSIAN);
+```
+___
+Train it!
 
+```CPP
     ntime;
     neural_network.train(traindata, opencv_trainresponse, Mat());
     ftime;
-    
+```
+___
+
+```CPP
     Point p_max, test_max;
 
-    //Mat opencv_testdata = testdata;
-
     int k=0;
-    Mat ghgh(1,4, CV_32F);
-    for (int i=0; i<opencv_testdata.rows; ++i)
+    Mat predicted_tuple(1,4, CV_32F);
+    for (int i=0; i<testdata.rows; ++i)
     { 
-       // neural_network.predict(opencv_testdata.row(i), ghgh);
-        neural_network.predict(testdata.row(i), ghgh);
-        minMaxLoc(ghgh,NULL,NULL,NULL,&p_max);
+        neural_network.predict(testdata.row(i), predicted_tuple);
+        minMaxLoc(predicted_tuple,NULL,NULL,NULL,&p_max);
         minMaxLoc(opencv_testresponse.row(i),NULL, NULL, NULL, &test_max);
         if (p_max.x == test_max.x)
         ++k;
@@ -281,7 +290,7 @@ ___
 
 ```CPP
     CMulticlassLabels* predictions = network->apply_multiclass(testfeatures);
-    int32_t k=0;
+    k=0;
     for (int32_t i=0; i<mytraindataidx.cols; i++ )
     {
         if (predictions->get_label(i)==shogun_testresponse.at<int>(i))

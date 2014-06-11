@@ -98,9 +98,12 @@ We declare few cv::Mat objects down there which we will later use for our work.
 
 ```
 ___
-As for now OpenCV donot support multiclass 
+As for now OpenCV donot support multiclass responses. The workaround that is suggested is to create a binary Tuple of M elements.(Here M is number of classes whose value is greater than 2 ).
+
+Hence here we create 4 tuples, each one for a separate class.
 ```CPP
-    Mat NNall_response = Mat::ones(all_responses.rows, 4, CV_32F);
+    Mat opencv_all_responses = Mat::ones(all_responses.rows, 4, CV_32F);
+    Mat shogun_all_responses = Mat::ones(all_responses.rows, 1, CV_32F);
     float data1[]={1,0,0,0};
     float data2[]={0,1,0,0};
     float data3[]={0,0,1,0};
@@ -113,28 +116,29 @@ As for now OpenCV donot support multiclass
 
 ```
 ___
+
 ```CPP
     for (int h=0; h<all_responses.rows; h++)
     {
         if (all_responses.at<float>(h) == 4 )
         {
-            data1Mat.copyTo(NNall_response.row(h));
-            all_responses.at<float>(h)=0;
+            data1Mat.copyTo(opencv_all_responses.row(h));
+            shogun_all_responses.at<float>(h)=0;
         }
         else if (all_responses.at<float>(h) == 10)
         {
-            data2Mat.copyTo(NNall_response.row(h));
-            all_responses.at<float>(h)=1;
+            data2Mat.copyTo(opencv_all_responses.row(h));
+            shogun_all_responses.at<float>(h)=1;
         }
         else if (all_responses.at<float>(h) == 11)
         {
-            data3Mat.copyTo(NNall_response.row(h));
-            all_responses.at<float>(h)=2;
+            data3Mat.copyTo(opencv_all_responses.row(h));
+            shogun_all_responses.at<float>(h)=2;
         }
         else 
         {
-            data4Mat.copyTo(NNall_response.row(h));
-            all_responses.at<float>(h)=3;
+            data4Mat.copyTo(opencv_all_responses.row(h));
+            shogun_all_responses.at<float>(h)=3;
         }
     }
 ```
@@ -143,8 +147,8 @@ ___
 
    for(int i=0; i<mytraindataidx.cols; i++)
     {
-        NNall_response.row(mytraindataidx.at<int>(i)).copyTo(opencv_trainresponse.row(i));
-        shogun_trainresponse.at<int>(i)=all_responses.at<float>(mytraindataidx.at<int>(i));    
+        opencv_all_responses.row(mytraindataidx.at<int>(i)).copyTo(opencv_trainresponse.row(i));
+        shogun_trainresponse.at<int>(i)=shogun_all_responses.at<float>(mytraindataidx.at<int>(i));    
         for(int j=0; j<=numfeatures; j++)
         {
             traindata.at<float>(i, j)=all_Data.at<float>(mytraindataidx.at<int>(i), j);
@@ -153,8 +157,8 @@ ___
 
     for(int i=0; i<mytestdataidx.cols; i++)
     {
-        NNall_response.row(mytestdataidx.at<int>(i)).copyTo(opencv_testresponse.row(i));
-        shogun_testresponse.at<int>(i)=all_responses.at<float>(mytestdataidx.at<int>(i));
+        opencv_all_responses.row(mytestdataidx.at<int>(i)).copyTo(opencv_testresponse.row(i));
+        shogun_testresponse.at<int>(i)=shogun_all_responses.at<float>(mytestdataidx.at<int>(i));
         for(int j=0; j<=numfeatures; j++)
         {
             testdata.at<float>(i, j)=all_Data.at<float>(mytestdataidx.at<int>(i), j);
@@ -173,8 +177,7 @@ ___
     ntime;
     neural_network.train(traindata, opencv_trainresponse, Mat());
     ftime;
-
-    Mat NN_output(opencv_testresponse.rows, opencv_testresponse.cols, CV_32F); 
+    
     Point p_max, test_max;
 
     Mat opencv_testdata = testdata;

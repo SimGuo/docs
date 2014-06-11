@@ -206,7 +206,7 @@ Test it!
         if (p_max.x == test_max.x)
         ++k;
     }
-    cout<< "our nn of opencv eff is: "<< 100.0* k/testdata.rows<<endl;
+    cout<< "our nn for opencv gives an efficiency of: "<< 100.0* k/testdata.rows<<endl;
 ```
 ___
 Now we start with the **Shogun's** Neural Network implementation.
@@ -307,14 +307,34 @@ ___
         if (predictions->get_label(i)==shogun_testresponse.at<int>(i))
         ++k;
     }
-    cout<<100.0*k/(mytraindataidx.cols)<<endl;
+    cout<<"our nn for shogun gives an efficiency of: "<<100.0*k/(mytraindataidx.cols)<<endl;
     return 0;
 }
 ```
 
 Output!
-```CPP
-    81.1343
+
+1st time
+```sh
+    0.0164959
+    our nn for opencv gives an efficiency of: 78.125
+    0.565931
+    our nn for shogun gives an efficiency of: 85.5324
+```
+
+2nd time
+```sh
+    0.0133458
+    our nn for opencv gives an efficiency of: 78.125
+    1.30268
+    our nn for shogun gives an efficiency of: 79.5139
+```
+
+3rd time
+```sh
+    0.0127718
+    our nn for opencv gives an efficiency of: 78.125
+    2.0165
+    our nn for shogun gives an efficiency of: 80.4398
 
 ```
-Our accuracy for performing Multiclass classification using Shogun's NN is 81.13% on this dataset

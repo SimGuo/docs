@@ -191,6 +191,7 @@ Train it!
     ftime;
 ```
 ___
+Test it!
 
 ```CPP
     Point p_max, test_max;

@@ -236,31 +236,31 @@ Prepare the testing data.
 ```
 ___
 
-To use NN in shogun following things are needed to be done
+To use Neural Networks in **Shogun** following things are needed to be done
 
-* Prepare a CDynamicObjectArray of CNeuralLayer-based objects that specify the type of layers used in the network. The array must contain at least one input layer. The last layer in the array is treated as the output layer. Also note that forward propagation is performed in the order at which the layers appear in the array. So if layer j takes its input from layer i then i must be less than j.
+* Prepare a ```CDynamicObjectArray``` of ```CNeuralLayer```-based objects that specify the type of layers used in the network. The array must contain at least one input layer. The last layer in the array is treated as the output layer. Also note that forward propagation is performed in the order at which the layers appear in the array. So if layer ```j``` takes its input from layer ```i``` then ```i``` must be less than ```j```.
 
-* Specify how the layers are connected together. This can be done using either connect() or quick_connect().
+* Specify how the layers are connected together. This can be done using either ```connect()``` or ```quick_connect()```.
 
-* Call initialize()
+* Call ```initialize()```.
 
-* Specify the training parameters if needed
+* Specify the training parameters if needed.
 
-* Train set_labels() and train()
+* Train ```set_labels()``` and ```train()```.
 
-* If needed, the network with the learned parameters can be stored on disk using save_serializable() (loaded using load_serializable())
+* If needed, the network with the learned parameters can be stored on disk using ```save_serializable()``` ( loaded using ```load_serializable()```)
 
-* Apply the network using apply()
+* Apply the network using ```apply()```.
 
 ___
 
 * Lets start with the first step.
 
-We will be preparing aCDynamicObjectArray. It creates an array that can be used like a list or an array.
+We will be preparing a ```CDynamicObjectArray```. It creates an array that can be used like a list or an array.
 We then append information related to number of neurons per layer in there respective order.
 
-Here I have created a 3 layered network. The input layer consists of 6 neurons which is equal to number of features.
-The hidden layer has 10 neurons and similarly the output layer has 4 neurons which is equal to the number of classes.
+Here I have created a ```3``` layered network. The input layer consists of ```6``` neurons which is equal to number of features.
+The hidden layer has ```10``` neurons and similarly the output layer has ```4``` neurons which is equal to the number of classes.
 
 ```CPP
     CDynamicObjectArray* layers = new CDynamicObjectArray();
@@ -276,7 +276,7 @@ ___
     network->quick_connect();
 ```
 ___
-* Initialize the network. The input is nothing but the standard deviation of the gaussian which is used to randomly initialize the parameters. We chose 0.1 here.
+* Initialize the network. The input is nothing but the standard deviation of the gaussian which is used to randomly initialize the parameters. We chose ```0.1``` here.
 
 ```CPP
     network->initialize(0.1);
@@ -292,7 +292,9 @@ ___
 
 ```CPP
     network->set_labels(labels);
+    ntime;
     network->train(shogun_trainfeatures);
+    ftime;
 ```
 ___
 * test it!

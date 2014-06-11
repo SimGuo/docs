@@ -208,18 +208,26 @@ ___
     cout<< "our nn of opencv eff is: "<< 100.0* k/testdata.rows<<endl;
 ```
 ___
+Now we start with the **Shogun's** Neural Network implementation.
+
+As usual, we start with creating the training data as the ```DenseFeatures```.
+
 ```CPP
     SGMatrix<float64_t> shogun_traindata = CV2SGMatrixFactory::getSGMatrix<float64_t>(traindata, CV2SG_MANUAL);
     SGMatrix<float64_t>::transpose_matrix(shogun_traindata.matrix, shogun_traindata.num_rows, shogun_traindata.num_cols);
     CDenseFeatures<float64_t>* shogun_trainfeatures = new CDenseFeatures<float64_t>(shogun_traindata);
 ```
 ___
+
+Now the training responses as the ```MulticlassLabels```.
 ```CPP
     CDenseFeatures<float64_t>* shogun_dense_response = CV2FeaturesFactory::getDenseFeatures<float64_t>(shogun_trainresponse, CV2SG_MANUAL);
     SGVector<float64_t> shogun_vector_response = shogun_dense_response->get_feature_vector(0);
     CMulticlassLabels* labels = new CMulticlassLabels(shogun_vector_response);
 ```
 ___
+
+Prepare the testing data.
 ```CPP
     SGMatrix<float64_t> shogun_testdata = CV2SGMatrixFactory::getSGMatrix<float64_t>(testdata, CV2SG_MANUAL);
     SGMatrix<float64_t>::transpose_matrix(shogun_testdata.matrix, shogun_testdata.num_rows, shogun_testdata.num_cols);

@@ -24,7 +24,7 @@ using namespace cv;
 int main()
 {
 
-init_shogun_with_defaults();
+    init_shogun_with_defaults();
 
     CvMLData mlData;
     mlData.read_csv("car.data");

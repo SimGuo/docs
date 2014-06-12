@@ -185,8 +185,10 @@ Here I have created a 3 layered network. The input layer consists of 6 neurons w
     int layersize_array[] = {6,10,4};
     Mat layersize_mat(1,3,CV_32S,layersize_array);
 
+    CvANN_MLP_TrainParams cvtrainparams = CvANN_MLP_TrainParams(cvTermCriteria( CV_TERMCRIT_ITER + CV_TERMCRIT_EPS, 1000,  1e-8 ), CvANN_MLP_TrainParams::BACKPROP, 0.1, 0.1);
+
     CvANN_MLP neural_network = CvANN_MLP();
-    neural_network.create(layersize_mat ,CvANN_MLP::GAUSSIAN);
+    neural_network.create(layersize_mat ,CvANN_MLP::SIGMOID_SYM);
 ```
 ___
 Train it!
@@ -292,6 +294,7 @@ ___
 
 ```CPP
     network->epsilon = 1e-8;
+    network->max_num_epochs = 1000;
 ```
 ___
 * set labels and train!
@@ -322,25 +325,25 @@ Output!
 
 1st time
 ```sh
-    0.0164959
-    our nn for opencv gives an efficiency of: 78.125
-    0.565931
-    our nn for shogun gives an efficiency of: 85.5324
+    2.32288
+    our nn for opencv gives an efficiency of: 68.8657
+    0.39906
+    our nn for shogun gives an efficiency of: 81.713
 ```
 
 2nd time
 ```sh
-    0.0133458
-    our nn for opencv gives an efficiency of: 78.125
-    1.30268
-    our nn for shogun gives an efficiency of: 79.5139
+    2.33449
+    our nn for opencv gives an efficiency of: 68.8657
+    0.39428
+    our nn for shogun gives an efficiency of: 78.125
 ```
 
 3rd time
 ```sh
-    0.0127718
-    our nn for opencv gives an efficiency of: 78.125
-    2.0165
-    our nn for shogun gives an efficiency of: 80.4398
+    2.30646
+    our nn for opencv gives an efficiency of: 68.8657
+    0.40048
+    our nn for shogun gives an efficiency of: 76.8519
 
 ```

@@ -59,7 +59,7 @@ int main()
 	vector<Mat> images; // for containing the training images.
 	vector<float64_t> labels; // for containing the labels for each of the images.
 	vector<SGMatrix<float64_t> > eigenfaces; // for containing the eigenfaces.
-											 //will be used later in the code.
+                                             //will be used later in the code.
 	// read the images & labels for each image from the text file.
 	//read_csv("check_content1.txt", images, labels);
 	read_csv("check_content1.txt", images, labels);
@@ -67,7 +67,7 @@ int main()
 	// The dataset we are using has all the images of a constant dimension.
 	const int height=images[0].rows; // height of each image.
 	const int width=images[0].cols;  // width of each image.
-	const int size=images.size();	 // total number of images in the training dataset.
+	const int size=images.size();    // total number of images in the training dataset.
 	const double length=width*height;// total features if each image is flattened.
 
 	// A Shogun Matrix for holding all the training images in their flattened form.
@@ -92,13 +92,13 @@ int main()
 	// Now each column of Stacked_mats holds a single training image in its
 	// flattened form like shown below.
 	//	 [
-	//	 [ Img1[0]	 Img2[0]   Img3[0]	 Img4[0] ......   ImgS[0];]
-	//	 [ Img1[1]	 Img2[1]   Img3[1]	 Img4[1] ......   ImgS[1];]
-	//	 [ Img1[2]	 Img2[2]   Img3[2]	 Img4[2] ......   ImgS[2];]
-	//	 [	 .			.		 .			.	 ......		 .	 ;]
-	//	 [	 .			.		 .			.	 ......		 .	 ;]
-	//	 [ Img1[L]	 Img2[L]   Img3[L]	 Img4[L] ......   ImgS[L];]here L = length  and S = size.
-	//															  ]
+	//	 [ Img1[0]   Img2[0]   Img3[0]   Img4[0] ......   ImgS[0];]
+	//	 [ Img1[1]   Img2[1]   Img3[1]   Img4[1] ......   ImgS[1];]
+	//	 [ Img1[2]   Img2[2]   Img3[2]   Img4[2] ......   ImgS[2];]
+	//	 [   .          .        .          .    ......         .;]
+	//	 [   .          .        .          .    ......         .;]
+	//	 [ Img1[L]   Img2[L]   Img3[L]   Img4[L] ......   ImgS[L];]here L = length  and S = size.
+	//	 ]
 
 	// convert the Stacked_mats into the CDenseFeatures of Shogun. 
 	// From here on we will be performing our PCA algo in Shogun. 
@@ -132,11 +132,11 @@ int main()
 	// & no. of eigenfaces required = 50 is,
 	//
 	//			Stacked_mats (10352 X 399)
-	//					*
-	//					|
-	//					|
-	//					*
-	//			 pca_projection (359  X 399)
+	//			        *
+	//			        |
+	//			        |
+	//			        *
+	//			pca_projection (359  X 399)
 	//
 	// So in effect we just reduced the dimensions of each of our 
 	// training images. We will further reduce it using LDA.
@@ -171,15 +171,15 @@ int main()
 	//		 This is what we have now
 	//
 	//		Stacked_mats (10352 X 399)
-	//					*
-	//					|
-	//					|
-	//					*
+	//		        *
+	//		        |
+	//		        |
+	//		        *
 	//		pca_projection (359 X 399)
-	//					*
-	//					|
-	//					|
-	//					*
+	//		        *
+	//		        |
+	//		        |
+	//		        *
 	//		lda_projection (39 X 399)
 
 	// WFINAL=WPCA*WLDA

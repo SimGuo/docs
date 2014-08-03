@@ -8,7 +8,6 @@
 #include<shogun/preprocessor/FisherLDA.h>
 #include<shogun/distance/EuclideanDistance.h>
 #include<shogun/lib/OpenCV/CV2SGFactory.h>
-#include<shogun/lib/OpenCV/SG2CVFactory.h>
 #include<shogun/labels/MulticlassLabels.h>
 
 #include<iostream>
@@ -73,7 +72,7 @@ int main()
 	// A Shogun Matrix for holding all the training images in their flattened form.
 	// no. of rows=total features per image.
 	// np. of cols=total number of training images.
-	SGMatrix<float64_t> Stacked_mats=SGMatrix<float64_t>( length, size);
+	SGMatrix<float64_t> Stacked_mats=SGMatrix<float64_t>(length, size);
 
 	// In the following snippet we perform these three steps.
 	// 1. convert each of the training images from OpenCV's Mat to Shogun's SGMatrix.
@@ -83,7 +82,7 @@ int main()
 	SGMatrix<float64_t> temp1, temp2;
 	for (int32_t j=0; j<size; ++j)
 	{
-		temp1=CV2SGFactory::getSGMatrix<float64_t>(images[j], CV2SG_MEMCPY);
+		temp1=CV2SGFactory::get_sgmatrix<float64_t>(images[j]);
 		temp2=flatten(temp1);
 		for(int32_t i=0; i<length; ++i)
 			Stacked_mats(i,j)=temp2(0,i);
@@ -191,8 +190,8 @@ int main()
 	Mat testimage=imread("/home/kislay/gsoc/shogun-data/att_dataset/testing/383.pgm",0);
 	
 	// we flatten the test image
-	SGMatrix<float64_t> testimage_sgmat=CV2SGFactory::getSGMatrix<float64_t>
-		(testimage, CV2SG_MEMCPY);
+	SGMatrix<float64_t> testimage_sgmat=CV2SGFactory::get_sgmatrix<float64_t>
+		(testimage);
 	temp2=flatten(testimage_sgmat); // temp2 is a column matrix.
 
 	// we centralize the test image by subtracting the mean from it.
@@ -245,16 +244,5 @@ int main()
 	SG_UNREF(pca_dense_feat);
 	SG_UNREF(pca);
 	SG_UNREF(Face_features);
+
 }
-
-
-
-
-
-
-
-
-
-
-
-

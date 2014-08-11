@@ -1,4 +1,6 @@
-###we will try to do a one to one comparison between the Shogun's implementaton of LibSVM to that of OpenCV's LibSVM on a standard multi-class data-set available here.(http://archive.ics.uci.edu/ml/machine-learning-databases/car/car.data)
+Support Vector Machines comparison between Shogun and OpenCV 
+
+###we will try to do a one to one comparison between the Shogun's implementaton of LibSVM to that of OpenCV's LibSVM on a standard multi-class data-set available [here.](http://archive.ics.uci.edu/ml/machine-learning-databases/car/car.data)
 ---
 our dataset consists of 1728 examples in which we will use the first half (864) as the training data and the rest as the testing data.
 ___
@@ -149,7 +151,7 @@ Testing procedure.
 ___
 Now we will work on the training of Shogun Multiclass LibSVM on the same dataset. Since the working of the Shogun library is a bit different from that of OpenCV, we might need to tweak it a little.
 
-As mentioned earlier, we have 4 classes in the dataset which are non-numerical in nature. This means that it's the job of OpenCV ```read_csv``` to convert these non-numerical responses into some numerics. For details read http://docs.opencv.org/modules/ml/doc/mldata.html#cvmldata-read-csv.
+As mentioned earlier, we have 4 classes in the dataset which are non-numerical in nature. This means that it's the job of OpenCV ```read_csv``` to convert these non-numerical responses into some numerics. For details read [official documentation](http://docs.opencv.org/modules/ml/doc/mldata.html#cvmldata-read-csv)
 
 We here observe that the ```read_csv``` returns``` 4, 10, 11 ```and``` 12``` as the 4 different responses. We just convert it into ```0, 1, 2 ```and ```3``` as Shogun likes it this way only! 
 

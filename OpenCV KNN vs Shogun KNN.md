@@ -1,4 +1,12 @@
+K-Nearest Neighbour comparison between Shogun and OpenCV
+
+####we will try to do a one to one comparison between the Shogun's implementaton of Neural Network to that of OpenCV's on a standard multi-class data-set available [here.](http://archive.ics.uci.edu/ml/machine-learning-databases/car/car.data)
+---
+our dataset consists of 1728 examples in which we will use the first half (864) as the training data and the rest as the testing data.
+___
+Lets start with the includes!
 ```CPP
+// shogun includes.
 #include <shogun/base/init.h>
 #include <shogun/multiclass/KNN.h>
 #include <shogun/distance/EuclideanDistance.h>
@@ -7,39 +15,78 @@
 #include <shogun/lib/OpenCV/CV2SGFactory.h>
 #include <shogun/features/DataGenerator.h>
 
+// opencv includes
 #include <opencv2/core/core.hpp>
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/ml/ml.hpp>
 
+// standard library
 #include<iostream>
-
+```
+___
+Now the namespaces.
+```CPP
 using namespace std;
 using namespace shogun;
 using namespace cv;
+
+```
+
+___
+Here comes the actual benchmarking code!
+```CPP
 #define k 10
 
 int main()
 {
 
     init_shogun_with_defaults();
-
+```
+___
+We will be using the CvMLData class of OpenCV.
+```CPP
     CvMLData mlData;
     mlData.read_csv("car.data");
+```
+___
+> The data that we have has the class response(outcome) written as the last index of each row.
 
+We get a pointer to ```CvMat``` class containing all the data. Total number of the features is the ```total columns -1```.
+
+```CPP
     const CvMat* temp = mlData.get_values();
     int numfeatures = temp->cols-1;
     mlData.set_response_idx(numfeatures);
-
-
+```
+___
+We divide the data available to us into two equal parts. We will use the first half for the training purpose and the rest half for the testing purpose.
+```CPP
     CvTrainTestSplit spl((float)0.5);
     mlData.set_train_test_split(&spl);
-
+```
+___
+We get the respective indices of the training and testing data and store it in the cv::Mat format.
+```CPP
 
     const CvMat* traindata_idx = mlData.get_train_sample_idx();
     const CvMat* testdata_idx = mlData.get_test_sample_idx();
     Mat mytraindataidx(traindata_idx);
     Mat mytestdataidx(testdata_idx);
+```
+___
+We declare few cv::Mat objects down there which we will later use for our work.
+* ```all_Data```: for containing the whole matrix offered to us by the ```.data``` file. 
+* ```all_responses```: for containing all the responses.
+* ```shogun_all_responses```: for containing all the responses for **Shogun**.
+* ```traindata```: for containing all the training data.
+* ```shogun_trainresponse```: for containing all the outputs we are provided for the training data as needed by **Shogun** for carrying out multiclass classification.
+* ```opencv_trainresponse```: for containing all the outputs we are provided for the training data as needed by **OpenCV** for carrying out multiclass classification.
+* ```testdata```: for containing all the testing data.
+* ```shogun_testresponse```: for containing all the outputs of the test data(for **Shogun**). This will be used for evaluation purpose.
+* ```opencv_testresponse```: for containing all the outputs of the test data(for **OpenCV**). This will be used for evaluation purpose.
 
+
+```CPP
     Mat all_Data(temp);
     Mat all_responses = mlData.get_responses();
     Mat traindata(mytraindataidx.cols,numfeatures,CV_32F);

@@ -247,7 +247,6 @@ Output!
 ```CPP
 	150.366
 	accuracy by the opencv svm is ...77.0833
-	[WARN] In file /home/kislay/gsoc/most_latest_shogun/shogun/src/shogun/multiclass/MulticlassOneVsOneStrategy.cpp line 33: MulticlassOneVsOneStrategy::CMulticlassOneVsOneStrategy(): register parameters!
 	0.215284
 	accuracy by the shogun svm is77.1991
 	

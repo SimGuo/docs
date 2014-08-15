@@ -61,7 +61,7 @@ int main()
                                              //will be used later in the code.
 	// read the images & labels for each image from the text file.
 	//read_csv("check_content1.txt", images, labels);
-	read_csv("check_content1.txt", images, labels);
+	read_csv("../../../data/att_dataset/training/content.txt", images, labels);
 
 	// The dataset we are using has all the images of a constant dimension.
 	const int height=images[0].rows; // height of each image.
@@ -187,7 +187,7 @@ int main()
 
 	// Now we must get our test image readied. We simply follow the 
 	// steps that we did above for the training images.
-	Mat testimage=imread("/home/kislay/gsoc/shogun-data/att_dataset/testing/383.pgm",0);
+	Mat testimage=imread("../../../data/att_dataset/testing/383.pgm",0);
 	
 	// we flatten the test image
 	SGMatrix<float64_t> testimage_sgmat=CV2SGFactory::get_sgmatrix<float64_t>

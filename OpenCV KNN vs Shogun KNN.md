@@ -1,7 +1,7 @@
 ###K-Nearest Neighbour comparison between Shogun and OpenCV.
 
 ---
-We will try to do a one to one comparison between Shogun's implementaton of neural network to that of OpenCV's one on a standard multi-class data-set available [here.](http://archive.ics.uci.edu/ml/machine-learning-databases/car/car.data) Our dataset consists of 1728 examples in which we will use the first half (864) as the training data and the rest as the testing data.
+We will try to do a one to one comparison between Shogun's implementaton of knn to that of OpenCV's one on a standard multi-class data-set available [here.](http://archive.ics.uci.edu/ml/machine-learning-databases/car/car.data) Our dataset consists of 1728 examples in which we will use the first half (864) as the training data and the rest as the testing data.
 
 Let's start with the includes!
 ```CPP

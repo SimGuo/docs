@@ -2,7 +2,7 @@
 
 ---
 We will try to do a one to one comparison between Shogun's implementaton of neural network to that of OpenCV's one on a standard multi-class data-set available [here.](http://archive.ics.uci.edu/ml/machine-learning-databases/car/car.data) Our dataset consists of 1728 examples in which we will use the first half (864) as the training data and the rest as the testing data.
-___
+
 Let's start with the includes!
 ```CPP
 // shogun includes.
@@ -22,7 +22,7 @@ Let's start with the includes!
 // standard library
 #include<iostream>
 ```
-___
+
 Now the namespaces.
 ```CPP
 using namespace std;
@@ -31,7 +31,7 @@ using namespace cv;
 
 ```
 
-___
+
 Here comes the actual benchmarking code!
 ```CPP
 #define k 10
@@ -41,13 +41,13 @@ int main()
 
     init_shogun_with_defaults();
 ```
-___
+
 We will be using the CvMLData class of OpenCV.
 ```CPP
     CvMLData mlData;
     mlData.read_csv("car.data");
 ```
-___
+
 The data that we have has the class response(outcome) written as the last index of each row.
 
 We get a pointer to a ```CvMat``` object containing all the data. The total number of features is ```total columns -1```.
@@ -57,13 +57,13 @@ We get a pointer to a ```CvMat``` object containing all the data. The total numb
     int numfeatures = temp->cols-1;
     mlData.set_response_idx(numfeatures);
 ```
-___
+
 We divide the data available to us into two equal parts. We will use the first half for the training purpose and the rest half for the testing purpose.
 ```CPP
     CvTrainTestSplit spl((float)0.5);
     mlData.set_train_test_split(&spl);
 ```
-___
+
 We get the respective indices of the training and testing data and store it in the cv::Mat format.
 ```CPP
 
@@ -72,7 +72,7 @@ We get the respective indices of the training and testing data and store it in t
     Mat mytraindataidx(traindata_idx);
     Mat mytestdataidx(testdata_idx);
 ```
-___
+
 We declare few cv::Mat objects down there which we will later use for our work.
 * ```all_Data```: for containing the whole matrix offered to us by the ```.data``` file. 
 * ```all_responses```: for containing all the responses.
@@ -96,7 +96,7 @@ We declare few cv::Mat objects down there which we will later use for our work.
     Mat opencv_trainresponse(mytraindataidx.cols,1,CV_32S);
     Mat opencv_testresponse(mytestdataidx.cols,1,CV_32S);
 ```
-___
+
 ```CPP
 
     // making responses compatible to Shogun.
@@ -121,7 +121,7 @@ ___
     }
 
 ```
-___
+
 ```CPP
 //filling out shogun_testresponse, shogun_trainresponse, opencv_testresponse, opencv_trainresponse, traindata and testdata mats in there.
    
@@ -145,7 +145,7 @@ ___
         }   
     }
 ```
-___
+
 We train the **OpenCV** KNN over the ```traindata``` Mat we just prepared.
 ```CPP
     CvKNearest opencv_knn(traindata, opencv_trainresponse);
@@ -172,7 +172,7 @@ Then evaluate the accuracy using the ```opencv_trainresponse``` Mat.
 
     cout<< "the efficiency of opencv knn is: "<<100.0 * ko/testdata.rows  <<endl;
 ```
-___
+
 We, as usual, prepare the ```CDenseFeatures``` object namely ```shogun_trainfeatures``` for training the **Shogun** KNN over it. 
 ```CPP
 
@@ -180,14 +180,14 @@ We, as usual, prepare the ```CDenseFeatures``` object namely ```shogun_trainfeat
     SGMatrix<float64_t>::transpose_matrix(shogun_traindata.matrix, shogun_traindata.num_rows, shogun_traindata.num_cols);
     CDenseFeatures<float64_t>* shogun_trainfeatures = new CDenseFeatures<float64_t>(shogun_traindata);
 ```
-___
+
 We form the ```CMulticlassLabels``` object named ```labels``` for containing the responses from the ```shogun_trainresponse``` Mat.
 ```CPP
     CDenseFeatures<float64_t>* shogun_dense_response = CV2SGFactory::get_dense_features<float64_t>(shogun_trainresponse);
     SGVector<float64_t> shogun_vector_response = shogun_dense_response->get_feature_vector(0);
     CMulticlassLabels* labels = new CMulticlassLabels(shogun_vector_response);
 ```
-___
+
 We, as usual, prepare the ```CDenseFeatures``` object namely ```shogun_testfeatures``` for testing. 
 ```CPP
     SGMatrix<float64_t> shogun_testdata = CV2SGFactory::get_sgmatrix<float64_t>(testdata);
@@ -203,7 +203,7 @@ ___
 	// Train classifier
 	knn->train();
 ```
-___
+
 Test it!
 ```CPP
     CMulticlassLabels* output = knn->apply_multiclass(shogun_testfeatures);

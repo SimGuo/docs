@@ -244,12 +244,11 @@ Testing Procedure.
 Output!
 ```CPP
 	150.366
-	accuracy by the opencv svm is ...77.0833
+	accuracy by the opencv svm is 77.0833
 	0.215284
-	accuracy by the shogun svm is77.1991
+	accuracy by the shogun svm is 77.1991
 	
 ```
-
 
 We infer from the output that:
 * The accuracy of OpenCV's LibSVM is 77.0833% with the time taken = 150.366 secs.

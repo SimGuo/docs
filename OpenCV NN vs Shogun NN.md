@@ -260,7 +260,7 @@ To use Neural Networks in **Shogun** following things are needed to be done
 * Apply the network using ```apply()```.
 
 
-
+---
 * Let us start with the first step.
 
 We will be preparing a ```CDynamicObjectArray```. It creates an array that can be used like a list or an array.

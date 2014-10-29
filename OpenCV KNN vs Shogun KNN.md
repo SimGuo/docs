@@ -20,7 +20,7 @@ Let's start with the includes!
 #include <opencv2/ml/ml.hpp>
 
 // standard library
-#include<iostream>
+#include <iostream>
 ```
 
 Now the namespaces.

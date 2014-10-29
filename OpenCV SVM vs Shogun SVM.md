@@ -53,7 +53,7 @@ We will be using the ```CvMLData``` class of OpenCV.
 
 The data that we have has the class response(outcome) written as the last index of each row.
 
-We get a pointer to ```CvMat``` class containing all the data. Total number of the features is the ```total columns -1```.
+We get a pointer to a ```CvMat``` object containing all the data. Total number of the features is ```total columns -1```.
 
 ```CPP
     const CvMat* temp = mlData.get_values();

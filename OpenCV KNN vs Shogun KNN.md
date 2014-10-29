@@ -58,22 +58,21 @@ We get a pointer to a ```CvMat``` object containing all the data. The total numb
     mlData.set_response_idx(numfeatures);
 ```
 
-We divide the data available to us into two equal parts. We will use the first half for the training purpose and the rest half for the testing purpose.
+We divide the data available to us into two equal parts. The first half is used for training and the rest half for testing.
 ```CPP
     CvTrainTestSplit spl((float)0.5);
     mlData.set_train_test_split(&spl);
 ```
 
-We get the respective indices of the training and testing data and store it in the cv::Mat format.
+We get the respective indices of the training and testing data and store it in the ```cv::Mat``` format.
 ```CPP
-
     const CvMat* traindata_idx = mlData.get_train_sample_idx();
     const CvMat* testdata_idx = mlData.get_test_sample_idx();
     Mat mytraindataidx(traindata_idx);
     Mat mytestdataidx(testdata_idx);
 ```
 
-We declare few cv::Mat objects down there which we will later use for our work.
+We declare few ```cv::Mat``` objects down there which we will later use for our work.
 * ```all_Data```: for containing the whole matrix offered to us by the ```.data``` file. 
 * ```all_responses```: for containing all the responses.
 * ```shogun_all_responses```: for containing all the responses for **Shogun**.

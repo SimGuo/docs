@@ -1,10 +1,9 @@
-K-Nearest Neighbour comparison between Shogun and OpenCV
+###K-Nearest Neighbour comparison between Shogun and OpenCV.
 
-####we will try to do a one to one comparison between the Shogun's implementaton of Neural Network to that of OpenCV's on a standard multi-class data-set available [here.](http://archive.ics.uci.edu/ml/machine-learning-databases/car/car.data)
 ---
-our dataset consists of 1728 examples in which we will use the first half (864) as the training data and the rest as the testing data.
+We will try to do a one to one comparison between Shogun's implementaton of neural network to that of OpenCV's one on a standard multi-class data-set available [here.](http://archive.ics.uci.edu/ml/machine-learning-databases/car/car.data) Our dataset consists of 1728 examples in which we will use the first half (864) as the training data and the rest as the testing data.
 ___
-Lets start with the includes!
+Let's start with the includes!
 ```CPP
 // shogun includes.
 #include <shogun/base/init.h>
@@ -49,9 +48,9 @@ We will be using the CvMLData class of OpenCV.
     mlData.read_csv("car.data");
 ```
 ___
-> The data that we have has the class response(outcome) written as the last index of each row.
+The data that we have has the class response(outcome) written as the last index of each row.
 
-We get a pointer to ```CvMat``` class containing all the data. Total number of the features is the ```total columns -1```.
+We get a pointer to a ```CvMat``` object containing all the data. The total number of features is ```total columns -1```.
 
 ```CPP
     const CvMat* temp = mlData.get_values();

@@ -55,7 +55,7 @@ We will be using the ```CvMLData``` class of OpenCV.
 
 The data that we have has the class response(outcome) written as the last index of each row.
 
-We get a pointer to ```CvMat``` class containing all the data. Total number of the features is the ```total columns -1```.
+We get a pointer to a ```CvMat``` object containing all the data. Total number of the features is ```total columns -1```.
 
 ```CPP
     const CvMat* temp = mlData.get_values();
@@ -79,7 +79,7 @@ We get the respective indices of the training and testing data and store it in t
     Mat mytestdataidx(testdata_idx);
 ```
 
-We declare few cv::Mat objects down there which we will later use for our work.
+We declare few cv::Mat objects down there which we will later use .
 * ```all_Data```: for containing the whole matrix offered to us by the ```.data``` file. 
 * ```all_responses```: for containing all the responses.
 * ```opencv_all_responses```: for containing all the responses for **OpenCV**.
@@ -152,7 +152,7 @@ We fill in the responses from ```all_responses``` to the two respective response
     }
 ```
 
-we fill in the ```traindata ```,  ```testdata```, ```opencv_train_response```, ```shogun_train_response```, ```opencv_test_response```, ```shogun_test_response``` Mats which were defined above.
+We fill in the ```traindata ```,  ```testdata```, ```opencv_train_response```, ```shogun_train_response```, ```opencv_test_response```, ```shogun_test_response``` Mats which were defined above.
 
 ```CPP
 
@@ -261,7 +261,7 @@ To use Neural Networks in **Shogun** following things are needed to be done
 
 
 
-* Lets start with the first step.
+* Let us start with the first step.
 
 We will be preparing a ```CDynamicObjectArray```. It creates an array that can be used like a list or an array.
 We then append information related to number of neurons per layer in there respective order.
@@ -289,14 +289,14 @@ The hidden layer has ```10``` neurons and similarly the output layer has ```4```
     network->initialize(0.1);
 ```
 
-* specify the training parameters if needed. 
+* Specify the training parameters if needed. 
 
 ```CPP
     network->epsilon = 1e-8;
     network->max_num_epochs = 1000;
 ```
 
-* set labels and train!
+* Set labels and train!
 
 ```CPP
     network->set_labels(labels);
@@ -305,7 +305,7 @@ The hidden layer has ```10``` neurons and similarly the output layer has ```4```
     ftime;
 ```
 
-* test it!
+* Test it!
 
 ```CPP
     CMulticlassLabels* predictions = network->apply_multiclass(testfeatures);
@@ -325,9 +325,9 @@ Output!
 1st time
 ```sh
     2.32288
-    our nn for opencv gives an efficiency of: 68.8657
+    Our nn for OpenCV gives an efficiency of: 68.8657
     0.39906
-    our nn for shogun gives an efficiency of: 81.713
+    Our nn for Shogun gives an efficiency of: 81.713
 ```
 
 2nd time

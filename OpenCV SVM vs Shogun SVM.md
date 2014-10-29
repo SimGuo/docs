@@ -6,26 +6,26 @@ Let's start with the includes!
 
 ```CPP
 //standard library 
-#include<iostream>
+#include <iostream>
 
 // opencv includes.
-#include<opencv2/ml/ml.hpp>
-#include<opencv2/core/core.hpp>
-#include<opencv2/highgui/highgui.hpp>
+#include <opencv2/ml/ml.hpp>
+#include <opencv2/core/core.hpp>
+#include <opencv2/highgui/highgui.hpp>
 
 // shogun includes.
-#include<shogun/base/init.h>
-#include<shogun/lib/SGMatrix.h>
-#include<shogun/lib/SGVector.h>
-#include<shogun/features/DenseFeatures.h>
-#include<shogun/lib/OpenCV/CV2SGFactory.h>
-#include<shogun/multiclass/MulticlassLibSVM.h>
-#include<shogun/labels/MulticlassLabels.h>
-#include<shogun/kernel/LinearKernel.h>
+#include <shogun/base/init.h>
+#include <shogun/lib/SGMatrix.h>
+#include <shogun/lib/SGVector.h>
+#include <shogun/features/DenseFeatures.h>
+#include <shogun/lib/OpenCV/CV2SGFactory.h>
+#include <shogun/multiclass/MulticlassLibSVM.h>
+#include <shogun/labels/MulticlassLabels.h>
+#include <shogun/kernel/LinearKernel.h>
 
 // for measuring time
 #include <omp.h>
-//The variable start will be later used in the time measurement calculations.
+// The variable start will be later used in the time measurement calculations.
 double start;
 #define ntime start=omp_get_wtime()
 #define ftime cout<<omp_get_wtime()-start<<endl
@@ -62,14 +62,15 @@ We get a pointer to ```CvMat``` class containing all the data. Total number of t
 
 ```
 
-We divide the data available to us into two equal parts. We will use the first half for the training purpose and the rest half for the testing purpose.
+We divide the data available to us into two equal parts. The first half is used for training and the rest half for testing.
 ```CPP
-	CvTrainTestSplit spl((float)0.5);
+
+    CvTrainTestSplit spl((float)0.5);
     mlData.set_train_test_split(&spl);	
 ```
 
 We get the respective indices of the training and testing data and store it in the cv::Mat format.
-```
+```CPP
 	const CvMat* traindata_idx = mlData.get_train_sample_idx();
 	const CvMat* testdata_idx = mlData.get_test_sample_idx();
 	Mat mytraindataidx(traindata_idx);
@@ -85,7 +86,7 @@ We declare few cv::Mat objects down there which we will later use for our work.
 * ```testdata```: for containing all the testing data.
 * ```testresponse```: for containing all the outputs of the test data. This will be used for evaluation purpose.
 
-```
+```CPP
 	Mat all_Data(temp);
 	Mat all_responses = mlData.get_responses();
 	Mat traindata(mytraindataidx.cols,numfeatures,CV_32F);

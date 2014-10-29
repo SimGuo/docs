@@ -1,10 +1,8 @@
-Neural Networks comparison between Shogun and OpenCV
+###Neural network comparison between Shogun and OpenCV
 
-####we will try to do a one to one comparison between the Shogun's implementaton of Neural Network to that of OpenCV's on a standard multi-class data-set available [here.](http://archive.ics.uci.edu/ml/machine-learning-databases/car/car.data)
----
-our dataset consists of 1728 examples in which we will use the first half (864) as the training data and the rest as the testing data.
-___
-Lets start with the includes!
+We will try to do a one to one comparison between Shogun's implementation of neural network to that of OpenCV's one on a standard multi-class data-set available [here.](http://archive.ics.uci.edu/ml/machine-learning-databases/car/car.data) Our dataset consists of 1728 examples in which we will use the first half (864) as the training data and the rest as the testing data.
+
+Let's start with the includes!
 ```CPP
 // shogun includes.
 #include <shogun/base/init.h>
@@ -33,7 +31,7 @@ double start;
 #define ntime start=omp_get_wtime()
 #define ftime cout<<omp_get_wtime()-start<<endl
 ```
-___
+
 Now the namespaces.
 ```CPP
 using namespace shogun;
@@ -41,21 +39,21 @@ using namespace std;
 using namespace cv;
 
 ```
-___
+
 Here comes the actual benchmarking code!
 ```CPP
 int main()
 {
     init_shogun_with_defaults();
 ```
-___
-we will be using the CvMLData class of OpenCV.
+
+We will be using the ```CvMLData``` class of OpenCV.
 ```CPP
     CvMLData mlData;
     mlData.read_csv("car.data");
 ```
-___
-> The data that we have has the class response(outcome) written as the last index of each row.
+
+The data that we have has the class response(outcome) written as the last index of each row.
 
 We get a pointer to ```CvMat``` class containing all the data. Total number of the features is the ```total columns -1```.
 
@@ -64,14 +62,15 @@ We get a pointer to ```CvMat``` class containing all the data. Total number of t
     int numfeatures = temp->cols-1;
     mlData.set_response_idx(numfeatures);
 ```
-___
-We divide the data available to us into two equal parts. We will use the first half for the training purpose and the rest half for the testing purpose.
+
+We divide the data available to us into two equal parts. The first half is used for training and the rest half for testing.
 ```CPP
+
     CvTrainTestSplit spl((float)0.5);
     mlData.set_train_test_split(&spl);  
 ```
-___
-We get the respective indices of the training and testing data and store it in the cv::Mat format.
+
+We get the respective indices of the training and testing data and store it in the ```cv::Mat``` format.
 ```CPP
 
     const CvMat* traindata_idx = mlData.get_train_sample_idx();
@@ -79,7 +78,7 @@ We get the respective indices of the training and testing data and store it in t
     Mat mytraindataidx(traindata_idx);
     Mat mytestdataidx(testdata_idx);
 ```
-___
+
 We declare few cv::Mat objects down there which we will later use for our work.
 * ```all_Data```: for containing the whole matrix offered to us by the ```.data``` file. 
 * ```all_responses```: for containing all the responses.
@@ -94,6 +93,7 @@ We declare few cv::Mat objects down there which we will later use for our work.
 
  
 ```CPP
+
     Mat all_Data(temp);
     Mat all_responses = mlData.get_responses();
     Mat traindata(mytraindataidx.cols,numfeatures,CV_32F);
@@ -106,8 +106,8 @@ We declare few cv::Mat objects down there which we will later use for our work.
     Mat shogun_all_responses = Mat::ones(all_responses.rows, 1, CV_32F);
 
 ```
-___
-As for now **OpenCV** donot support multiclass responses. The workaround that is suggested is to create a binary tuple of ```M``` elements.( Here ```M``` is number of classes whose value is greater than ```2``` ).
+
+As for now **OpenCV** doesnot support multiclass responses. The workaround is to create a binary tuple of ```M``` elements.( Here ```M``` is number of classes whose value is greater than ```2``` ).
 
 Hence here we create ```4``` tuples, each one for a separate class.
 ```CPP
@@ -123,7 +123,7 @@ Hence here we create ```4``` tuples, each one for a separate class.
     Mat data4Mat(1,4,CV_32F,data4);
 
 ```
-___
+
 We fill in the responses from ```all_responses``` to the two respective response Mat objects of **OpenCV** and **Shogun** namely ```opencv_all_responses``` and ```shogun_all_responses```.
 
 ```CPP
@@ -151,7 +151,7 @@ We fill in the responses from ```all_responses``` to the two respective response
         }
     }
 ```
-___
+
 we fill in the ```traindata ```,  ```testdata```, ```opencv_train_response```, ```shogun_train_response```, ```opencv_test_response```, ```shogun_test_response``` Mats which were defined above.
 
 ```CPP
@@ -177,7 +177,7 @@ we fill in the ```traindata ```,  ```testdata```, ```opencv_train_response```, `
     }
 
 ```
-___
+
 Here I have created a 3 layered network. The input layer consists of 6 neurons which is equal to number of features. The hidden layer has 10 neurons and similarly the output layer has 4 neurons which is equal to the number of classes.
 
 ```CPP
@@ -189,7 +189,7 @@ Here I have created a 3 layered network. The input layer consists of 6 neurons w
     CvANN_MLP neural_network = CvANN_MLP();
     neural_network.create(layersize_mat ,CvANN_MLP::SIGMOID_SYM);
 ```
-___
+
 Train it!
 
 ```CPP
@@ -197,7 +197,7 @@ Train it!
     neural_network.train(traindata, opencv_trainresponse, Mat());
     ftime;
 ```
-___
+
 Test it!
 
 ```CPP
@@ -215,7 +215,7 @@ Test it!
     }
     cout<< "our nn for opencv gives an efficiency of: "<< 100.0* k/testdata.rows<<endl;
 ```
-___
+
 Now we start with the **Shogun's** Neural Network implementation.
 
 As usual, we start with creating the training data as the ```DenseFeatures```.
@@ -225,7 +225,7 @@ As usual, we start with creating the training data as the ```DenseFeatures```.
     SGMatrix<float64_t>::transpose_matrix(shogun_traindata.matrix, shogun_traindata.num_rows, shogun_traindata.num_cols);
     CDenseFeatures<float64_t>* shogun_trainfeatures = new CDenseFeatures<float64_t>(shogun_traindata);
 ```
-___
+
 
 Now the training responses as the ```MulticlassLabels```.
 ```CPP
@@ -233,7 +233,7 @@ Now the training responses as the ```MulticlassLabels```.
     SGVector<float64_t> shogun_vector_response = shogun_dense_response->get_feature_vector(0);
     CMulticlassLabels* labels = new CMulticlassLabels(shogun_vector_response);
 ```
-___
+
 
 Prepare the testing data.
 ```CPP
@@ -241,7 +241,7 @@ Prepare the testing data.
     SGMatrix<float64_t>::transpose_matrix(shogun_testdata.matrix, shogun_testdata.num_rows, shogun_testdata.num_cols);
     CDenseFeatures<float64_t>* testfeatures = new CDenseFeatures<float64_t>(shogun_testdata);
 ```
-___
+
 
 To use Neural Networks in **Shogun** following things are needed to be done
 
@@ -259,7 +259,7 @@ To use Neural Networks in **Shogun** following things are needed to be done
 
 * Apply the network using ```apply()```.
 
-___
+
 
 * Lets start with the first step.
 
@@ -275,27 +275,27 @@ The hidden layer has ```10``` neurons and similarly the output layer has ```4```
     layers->append_element(new CNeuralLogisticLayer(10)); 
     layers->append_element(new CNeuralLogisticLayer(4));
 ```
-___
+
 * Here we have to make a connection between the three layers that we formed above. To connect each neuron of one layer to each one of the layer suceeding it, we can directly use ```quick_connect()```. However If particular connections are to be made separately, we may have to use ```connect()```.  
 
 ```CPP
     CNeuralNetwork* network = new CNeuralNetwork(layers);
     network->quick_connect();
 ```
-___
+
 * Initialize the network. The input is nothing but the standard deviation of the gaussian which is used to randomly initialize the parameters. We chose ```0.1``` here.
 
 ```CPP
     network->initialize(0.1);
 ```
-___
+
 * specify the training parameters if needed. 
 
 ```CPP
     network->epsilon = 1e-8;
     network->max_num_epochs = 1000;
 ```
-___
+
 * set labels and train!
 
 ```CPP
@@ -304,7 +304,7 @@ ___
     network->train(shogun_trainfeatures);
     ftime;
 ```
-___
+
 * test it!
 
 ```CPP

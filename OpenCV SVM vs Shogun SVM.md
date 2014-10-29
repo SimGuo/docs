@@ -1,10 +1,8 @@
-Support Vector Machines comparison between Shogun and OpenCV 
+###Support Vector Machines comparison between Shogun and OpenCV 
 
-###we will try to do a one to one comparison between the Shogun's implementaton of LibSVM to that of OpenCV's LibSVM on a standard multi-class data-set available [here.](http://archive.ics.uci.edu/ml/machine-learning-databases/car/car.data)
----
-our dataset consists of 1728 examples in which we will use the first half (864) as the training data and the rest as the testing data.
-___
-Lets start with the includes!
+We will try to do a one to one comparison between the Shogun's implementaton of LibSVM to that of OpenCV's one on a standard multi-class data-set available [here.](http://archive.ics.uci.edu/ml/machine-learning-databases/car/car.data) Our dataset consists of 1728 examples in which we will use the first half (864) as the training data and the rest as the testing data.
+
+Let's start with the includes!
 
 ```CPP
 //standard library 
@@ -39,22 +37,21 @@ using namespace shogun;
 using namespace cv;
 using namespace std;
 ```
-___
+
 Here comes the actual benchmarking code!
 ```CPP
 int main()
 {
     init_shogun_with_defaults();
 ```
-___
-we will be using the CvMLData class of OpenCV.
+
+We will be using the ```CvMLData``` class of OpenCV.
 ```CPP
     CvMLData mlData;
     mlData.read_csv("car.data");
-
 ```
 
-> The data that we have has the class response(outcome) written as the last index of each row.
+The data that we have has the class response(outcome) written as the last index of each row.
 
 We get a pointer to ```CvMat``` class containing all the data. Total number of the features is the ```total columns -1```.
 
@@ -64,13 +61,13 @@ We get a pointer to ```CvMat``` class containing all the data. Total number of t
     mlData.set_response_idx(numfeatures);
 
 ```
-___
+
 We divide the data available to us into two equal parts. We will use the first half for the training purpose and the rest half for the testing purpose.
 ```CPP
 	CvTrainTestSplit spl((float)0.5);
     mlData.set_train_test_split(&spl);	
 ```
-___
+
 We get the respective indices of the training and testing data and store it in the cv::Mat format.
 ```
 	const CvMat* traindata_idx = mlData.get_train_sample_idx();
@@ -79,7 +76,7 @@ We get the respective indices of the training and testing data and store it in t
 	Mat mytestdataidx(testdata_idx);
 	
 ```
-___
+
 We declare few cv::Mat objects down there which we will later use for our work.
 * ```all_Data```: for containing the whole matrix offered to us by the ```.data``` file. 
 * ```all_responses```: for containing all the responses.
@@ -96,8 +93,8 @@ We declare few cv::Mat objects down there which we will later use for our work.
 	Mat testdata(mytestdataidx.cols,numfeatures,CV_32F);
 	Mat testresponse(mytestdataidx.cols,1,CV_32S);
 ```
-___
-we try to fill in the ```traindata```, ```testdata```,```trainresponse``` and ```testresponse``` Mats which were defined above.
+
+We try to fill in the ```traindata```, ```testdata```,```trainresponse``` and ```testresponse``` Mats which were defined above.
 ```CPP
     for(int i=0; i<mytraindataidx.cols; i++)
     {
@@ -118,7 +115,7 @@ we try to fill in the ```traindata```, ```testdata```,```trainresponse``` and ``
     }
 
 ```
-___
+
 With the traindata and trainresponse Mat ready, we too are ready for testing SVM on it.
 ```CPP
     CvSVM opencv_svm;
@@ -128,14 +125,14 @@ With the traindata and trainresponse Mat ready, we too are ready for testing SVM
 	params.kernel_type=SVM::LINEAR;
 	params.term_crit=TermCriteria(CV_TERMCRIT_ITER, (int)1e7, 1e-6);
 ```
-___
+
 Run it! Train it!
 ```CPP
     ntime;
 	opencv_svm.train(traindata,trainresponse, Mat(), Mat(),params);
     ftime; 
 ```
-___
+
 Testing procedure.
 
 ```
@@ -148,7 +145,7 @@ Testing procedure.
 	}
     cout<<"accuracy by the opencv svm is ..." <<100.0 * (float)k/testdata.rows<<endl;
 ```
-___
+
 Now we will work on the training of Shogun Multiclass LibSVM on the same dataset. Since the working of the Shogun library is a bit different from that of OpenCV, we might need to tweak it a little.
 
 As mentioned earlier, we have 4 classes in the dataset which are non-numerical in nature. This means that it's the job of OpenCV ```read_csv``` to convert these non-numerical responses into some numerics. For details read [official documentation](http://docs.opencv.org/modules/ml/doc/mldata.html#cvmldata-read-csv)
@@ -170,7 +167,7 @@ We here observe that the ```read_csv``` returns``` 4, 10, 11 ```and``` 12``` as 
         else all_responses.at<float>(h)=3;
     }
 ```
-___
+
 We need to fill in the ```testresponse``` and ```trainresponse``` with the above converted responses. 
 ```CPP
   for(int i=0; i<mytraindataidx.cols; i++)
@@ -183,34 +180,34 @@ We need to fill in the ```testresponse``` and ```trainresponse``` with the above
         testresponse.at<int>(i)=all_responses.at<float>(mytestdataidx.at<int>(i));
     }
 ```
-___
+
 We here start preparing for the SVM implementation in shogun. Things that we will be needing are:
 * The training data in the form of ```DenseFeatures```.
 * The training responses in the form of ```MulticlassLabels```.
 * A kernel.
  
-we start with creating the training data as the ```DenseFeatures```.
+We start with creating the training data as the ```DenseFeatures```.
 
 ```CPP
     SGMatrix<float64_t> shogun_traindata = CV2SGFactory::get_sgmatrix<float64_t>(traindata);
     SGMatrix<float64_t>::transpose_matrix(shogun_traindata.matrix, shogun_traindata.num_rows, shogun_traindata.num_cols);
     CDenseFeatures<float64_t>* shogun_trainfeatures = new CDenseFeatures<float64_t>(shogun_traindata);
 ```
-___
+
 Now the training responses as the ```MulticlassLabels```.
 ```CPP
     CDenseFeatures<float64_t>* shogun_dense_response = CV2SGFactory::get_dense_features<float64_t>(trainresponse);
     SGVector<float64_t> shogun_vector_response = shogun_dense_response->get_feature_vector(0);
     CMulticlassLabels* labels = new CMulticlassLabels(shogun_vector_response);
 ```
-___
+
 Now the Kernel.
 
 ```CPP
     CLinearKernel* kernel = new CLinearKernel();
     kernel->init(shogun_trainfeatures, shogun_trainfeatures);
 ```
-___
+
 Now we are ready to initialize the SVM for Shogun. We train it here!
 ```CPP
     CMulticlassLibSVM* shogunsvm = new CMulticlassLibSVM(10, kernel, labels );
@@ -218,14 +215,14 @@ Now we are ready to initialize the SVM for Shogun. We train it here!
     shogunsvm->train();
     ftime;
 ```
-___
+
 Prepare the testing data.
 ```CPP
     SGMatrix<float64_t> shogun_testdata=CV2SGFactory::get_sgmatrix<float64_t>(testdata);
     SGMatrix<float64_t>::transpose_matrix(shogun_testdata.matrix, shogun_testdata.num_rows, shogun_testdata.num_cols);
     CDenseFeatures<float64_t>* testfeatures=new CDenseFeatures<float64_t>(shogun_testdata);
 ```
-___
+
 Testing Procedure.
 ```CPP
     CMulticlassLabels* results=shogunsvm->apply_multiclass(testfeatures);
@@ -242,7 +239,7 @@ Testing Procedure.
     return 0;
 }
 ```
-___
+
 Output!
 ```CPP
 	150.366
@@ -251,11 +248,8 @@ Output!
 	accuracy by the shogun svm is77.1991
 	
 ```
-___
+
 
 We infer from the output that:
-* the accuracy of OpenCV's LibSVM is 77.0833% with the time taken = 150.366 secs.
-* the accuracy of Shogun's LibSVM is 77.1991% with the time taken = 0.215 secs.
-
-
-
+* The accuracy of OpenCV's LibSVM is 77.0833% with the time taken = 150.366 secs.
+* The accuracy of Shogun's LibSVM is 77.1991% with the time taken = 0.215 secs.
